@@ -4,7 +4,8 @@
 
 <head>
     <title>The Seattle Polycule Map</title>
-
+    <meta name="googlebot" content="noindex">
+    <meta name="googlebot-news" content="nosnippet">
     <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1, maximum-scale=1">
 
     <script src="https://unpkg.com/cytoscape/dist/cytoscape.min.js"></script>
@@ -269,8 +270,37 @@
                 results.forEach((result) => {
                     var relationshipNameA = result["Relationship Name A"];
                     var relationshipNameB = result["Relationship Name B"];
+
+                    var isRelationship = true;
+                    var isSexual = true;
+                    var isKinky = false;
+                    var isNesting = false;
+                    var relationshipType = result["Relationship Type"];
+                    var relationshipTypeString = "";
+                    if (relationshipType) {
+                        isRelationship = relationshipType.includes('R');
+                        isSexual = relationshipType.includes('S');
+                        isKinky = relationshipType.includes('K');
+                        isNesting = relationshipType.includes('N');
+
+                        if (isRelationship) {
+                            relationshipTypeString += "<br />Relationship";
+                        }
+                        if (isNesting) {
+                            relationshipTypeString += "<br />Nesting";
+                        }
+                        if (isSexual) {
+                            relationshipTypeString += "<br />Sexual";
+                        }
+                        if (isKinky) {
+                            relationshipTypeString += "<br />Kinky";
+                        }
+                    }
+
                     if (relationshipNameA && relationshipNameB) {
-                        let edge = { data: { id: relationshipNameA + '↔' + relationshipNameB, source: relationshipNameA, target: relationshipNameB } };
+                        let edge = {
+                            data: { id: relationshipNameA + '↔' + relationshipNameB + relationshipTypeString, source: relationshipNameA, target: relationshipNameB }, style: { 'line-fill': isKinky ? 'radial-gradient' : 'solid', 'line-style': isSexual ? 'solid' : 'dashed', 'width': isNesting ? 2.5 : 1, 'line-opacity': isRelationship ? 1 : 0.2 }
+                        };
                         parsedData.push(edge);
                     }
                 });
@@ -303,12 +333,15 @@
                         {
                             selector: 'edge',
                             style: {
-                                'width': 1,
-                                'line-color': '#ccc',
+                                //'width': 1,
+                                'line-color': '#aac',
                                 //'target-arrow-color': '#ccc',
                                 //'target-arrow-shape': 'triangle',
                                 'curve-style': 'bezier',
-                                'line-opacity': 1,
+                                //'line-opacity': 1,
+                                //'line-fill': 'radial-gradient',
+                                'line-gradient-stop-colors': '#c00 #ccc',
+                                //'line-style': 'dashed'
                             }
                         },
 
