@@ -175,21 +175,18 @@ function gsheetProcessor(options, callback, onError) {
 
 gsheetProcessor(
     {
-        sheetId: "1_IpENDkoujmWr-B0M2ZVcyvgPQGeKwYxfHX_JYTDtRc",
+        sheetId: "1z92C5CPb5CNhkZ8d7sLNJAb0jc-A6NyUvlK6VtlIk50",
         sheetNumber: 1,
-        returnAllResults: false,
+        returnAllResults: true,
         // Note: this API Key is locked to this demo, it can't be
         // used in your own projects.
         apiKey: "AIzaSyD4ZoTrXMfF7mhAMVNNiensNsWL5XC6Sqo",
-        filter: {
-            department: "archaeology"
-        }
     },
     (results) => {
         results.forEach((result) => {
             document.getElementById(
                 "app"
-            ).innerHTML += `<p>${result["Module Description"]}</p>`;
+            ).innerHTML += `<p>${result["Name"]}</p>`;
         });
     },
     (error) => {
