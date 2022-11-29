@@ -1,6 +1,13 @@
-﻿<!doctype html>
+﻿<!DOCTYPE>
+
 <html>
+
 <head>
+    <title>The Seattle Polycule Map</title>
+
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1, maximum-scale=1">
+
+    <script src="https://unpkg.com/cytoscape/dist/cytoscape.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.18.2/cytoscape.min.js"></script>
     <script src="https://unpkg.com/layout-base/layout-base.js"></script>
     <script src="https://unpkg.com/cose-base/cose-base.js"></script>
@@ -13,143 +20,356 @@
     <script src="https://unpkg.com/tippy.js@4.0.1/umd/index.all.min.js"></script>
     <script src="https://unpkg.com/layout-base/layout-base.js"></script>
     <script src="https://unpkg.com/cose-base/cose-base.js"></script>
+
+    <style>
+        body {
+            font-family: helvetica;
+            font-size: 14px;
+        }
+
+        #cy {
+            width: 100%;
+            height: 100%;
+            z-index: 999;
+        }
+
+        h1 {
+            opacity: 0.5;
+            font-size: 1em;
+        }
+
+        button {
+            margin-right: 10px;
+        }
+    </style>
 </head>
-<style>
-    #cy {
-        width: 100%;
-        height: 100%;
-        position: absolute;
-        top: 0px;
-        left: 0px;
-    }
-</style>
+
 <body>
     <div id="cy"></div>
+
     <script>
+        function GSheetsapi({ apiKey, sheetId, sheetName, sheetNumber = 1 }) {
+            try {
+                const sheetNameStr = sheetName && sheetName !== '' ? encodeURIComponent(sheetName) : `Sheet${sheetNumber}`
+                const sheetsUrl = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${sheetNameStr}?dateTimeRenderOption=FORMATTED_STRING&majorDimension=ROWS&valueRenderOption=FORMATTED_VALUE&key=${apiKey}`;
 
-        var ret = "[ { data: { id: 'Ty' }, style: { 'background-color': '#0000FF', width: 40, height: 40, 'background-opacity': 0.5, 'font-size': 10, color: '#FFFFFF' } }, { data: { id: 'Ally' }, style: { 'background-color': '#0000FF', width: 40, height: 40, 'background-opacity': 0.5, 'font-size': 10, color: '#FFFFFF' } }, { data: { id: 'Amanda' }, style: { 'background-color': '#0000FF', width: 40, height: 40, 'background-opacity': 0.5, 'font-size': 10, color: '#FFFFFF' } }, { data: { id: 'Chara' }, style: { 'background-color': '#0000FF', width: 40, height: 40, 'background-opacity': 0.5, 'font-size': 10, color: '#FFFFFF' } }, { data: { id: 'Joshua' }, style: { 'background-color': '#0000FF', width: 40, height: 40, 'background-opacity': 0.5, 'font-size': 10, color: '#FFFFFF' } }, { data: { id: 'Alex' }, style: { 'background-color': '#0000FF', width: 40, height: 40, 'background-opacity': 0.5, 'font-size': 10, color: '#FFFFFF' } }, { data: { id: 'Kris' }, style: { 'background-color': '#0000FF', width: 40, height: 40, 'background-opacity': 0.5, 'font-size': 10, color: '#FFFFFF' } }, { data: { id: 'Haley' }, style: { 'background-color': '#0000FF', width: 40, height: 40, 'background-opacity': 0.5, 'font-size': 10, color: '#FFFFFF' } }, { data: { id: 'Abzi' }, style: { 'background-color': '#0000FF', width: 40, height: 40, 'background-opacity': 0.5, 'font-size': 10, color: '#FFFFFF' } }, { data: { id: 'Andrew' }, style: { 'background-color': '#0000FF', width: 40, height: 40, 'background-opacity': 0.5, 'font-size': 10, color: '#FFFFFF' } }, { data: { id: 'Emma' }, style: { 'background-color': '#0000FF', width: 40, height: 40, 'background-opacity': 0.5, 'font-size': 10, color: '#FFFFFF' } }, { data: { id: 'Aliah' }, style: { 'background-color': '#0000FF', width: 40, height: 40, 'background-opacity': 0.5, 'font-size': 10, color: '#FFFFFF' } }, { data: { id: 'Eowyn' }, style: { 'background-color': '#0000FF', width: 40, height: 40, 'background-opacity': 0.5, 'font-size': 10, color: '#FFFFFF' } }, { data: { id: 'Jess' }, style: { 'background-color': '#0000FF', width: 40, height: 40, 'background-opacity': 0.5, 'font-size': 10, color: '#FFFFFF' } }, { data: { id: 'Winter' }, style: { 'background-color': '#0000FF', width: 40, height: 40, 'background-opacity': 0.5, 'font-size': 10, color: '#FFFFFF' } }, { data: { id: 'Danilo' }, style: { 'background-color': '#0000FF', width: 40, height: 40, 'background-opacity': 0.5, 'font-size': 10, color: '#FFFFFF' } }, { data: { id: 'Ivan' }, style: { 'background-color': '#0000FF', width: 40, height: 40, 'background-opacity': 0.5, 'font-size': 10, color: '#FFFFFF' } }, { data: { id: 'Kim' }, style: { 'background-color': '#0000FF', width: 40, height: 40, 'background-opacity': 0.5, 'font-size': 10, color: '#FFFFFF' } }, { data: { id: 'Quazie' }, style: { 'background-color': '#0000FF', width: 40, height: 40, 'background-opacity': 0.5, 'font-size': 10, color: '#FFFFFF' } }, { data: { id: 'George' }, style: { 'background-color': '#0000FF', width: 40, height: 40, 'background-opacity': 0.5, 'font-size': 10, color: '#FFFFFF' } }, { data: { id: 'Heather' }, style: { 'background-color': '#0000FF', width: 40, height: 40, 'background-opacity': 0.5, 'font-size': 10, color: '#FFFFFF' } }, { data: { id: 'Ray' }, style: { 'background-color': '#0000FF', width: 40, height: 40, 'background-opacity': 0.5, 'font-size': 10, color: '#FFFFFF' } }, { data: { id: 'Shell' }, style: { 'background-color': '#0000FF', width: 40, height: 40, 'background-opacity': 0.5, 'font-size': 10, color: '#FFFFFF' } }, { data: { id: 'Katie' }, style: { 'background-color': '#0000FF', width: 40, height: 40, 'background-opacity': 0.5, 'font-size': 10, color: '#FFFFFF' } }, { data: { id: 'Jesse' }, style: { 'background-color': '#0000FF', width: 40, height: 40, 'background-opacity': 0.5, 'font-size': 10, color: '#FFFFFF' } }, { data: { id: 'Ty↔Ally', source: 'Ty', target: 'Ally' }, style: { 'line-opacity': 1 } }, { data: { id: 'Ty↔Amanda', source: 'Ty', target: 'Amanda' }, style: { 'line-opacity': 1 } }, { data: { id: 'Ally↔Chara', source: 'Ally', target: 'Chara' }, style: { 'line-opacity': 1 } }, { data: { id: 'Chara↔Alex', source: 'Chara', target: 'Alex' }, style: { 'line-opacity': 1 } }, { data: { id: 'Chara↔Kris', source: 'Chara', target: 'Kris' }, style: { 'line-opacity': 1 } }, { data: { id: 'Amanda↔Joshua', source: 'Amanda', target: 'Joshua' }, style: { 'line-opacity': 1 } }, { data: { id: 'Kris↔Haley', source: 'Kris', target: 'Haley' }, style: { 'line-opacity': 1 } }, { data: { id: 'Alex↔Abzi', source: 'Alex', target: 'Abzi' }, style: { 'line-opacity': 1 } }, { data: { id: 'Alex↔Andrew', source: 'Alex', target: 'Andrew' }, style: { 'line-opacity': 1 } }, { data: { id: 'Emma↔Andrew', source: 'Emma', target: 'Andrew' }, style: { 'line-opacity': 1 } }, { data: { id: 'Emma↔Alex', source: 'Emma', target: 'Alex' }, style: { 'line-opacity': 1 } }, { data: { id: 'Emma↔Aliah', source: 'Emma', target: 'Aliah' }, style: { 'line-opacity': 1 } }, { data: { id: 'Abzi↔Eowyn', source: 'Abzi', target: 'Eowyn' }, style: { 'line-opacity': 1 } }, { data: { id: 'Eowyn↔Jess', source: 'Eowyn', target: 'Jess' }, style: { 'line-opacity': 1 } }, { data: { id: 'Abzi↔Winter', source: 'Abzi', target: 'Winter' }, style: { 'line-opacity': 1 } }, { data: { id: 'Winter↔Danilo', source: 'Winter', target: 'Danilo' }, style: { 'line-opacity': 1 } }, { data: { id: 'Winter↔Ivan', source: 'Winter', target: 'Ivan' }, style: { 'line-opacity': 1 } }, { data: { id: 'Winter↔Kim', source: 'Winter', target: 'Kim' }, style: { 'line-opacity': 1 } }, { data: { id: 'Haley↔Quazie', source: 'Haley', target: 'Quazie' }, style: { 'line-opacity': 1 } }, { data: { id: 'George↔Heather', source: 'George', target: 'Heather' }, style: { 'line-opacity': 1 } }, { data: { id: 'Ray↔Shell', source: 'Ray', target: 'Shell' }, style: { 'line-opacity': 1 } }, { data: { id: 'Abzi↔Heather', source: 'Abzi', target: 'Heather' }, style: { 'line-opacity': 1 } }, { data: { id: 'George↔Alex', source: 'George', target: 'Alex' }, style: { 'line-opacity': 1 } }, { data: { id: 'Katie↔Jesse', source: 'Katie', target: 'Jesse' }, style: { 'line-opacity': 1 } } ]";
-
-        function printRet(ret) {
-            var data = JSON.parse(JSON.stringify(ret));
-
-            var cy = cytoscape({
-
-                container: document.getElementById('cy'),
-
-                elements: data,
-
-                style: [
-                    {
-                        selector: 'node',
-                        style: {
-                            'width': 20,
-                            'height': 20,
-                            'border-width': '2px',
-                            //'border-color': '#262626',
-                            'border-opacity': 0.5,
-                            //'background-color': '#666',
-                            'label': 'data(id)',
-                            'text-valign': 'center',
-                            'font-size': 3,
-                            //'text-background-color': '#1b1b1b',
-                            'text-background-opacity': 0,
-                            'text-background-shape': 'rectangle',
-                            //'text-background-padding': '10px'
+                return fetch(sheetsUrl)
+                    .then(response => {
+                        if (!response.ok) {
+                            console.log('there is an error in the gsheets response');
+                            throw new Error('Error fetching GSheet');
                         }
-                    },
-
-                    {
-                        selector: 'edge',
-                        style: {
-                            'width': 1,
-                            'line-color': '#ccc',
-                            //'target-arrow-color': '#ccc',
-                            //'target-arrow-shape': 'triangle',
-                            'curve-style': 'bezier'
-                        }
-
-                    },
-
-                    {
-                        selector: 'node.highlight',
-                        style: {
-                            'border-color': '#FFF',
-                            'border-width': '2px'
-                        }
-                    },
-
-                    {
-                        selector: 'node.semitransp',
-                        style: { 'opacity': '0.1' }
-                    },
-
-                    {
-                        selector: 'edge.highlight',
-                        style: { 'mid-target-arrow-color': '#FFF' }
-                    },
-
-                    {
-                        selector: 'edge.semitransp',
-                        style: { 'opacity': '0.1' }
-                    }
-                ],
-
-                layout: {
-                    name: 'cose',
-                    randomize: true,
-                    quality: "default",
-                    idealEdgeLength: 5,
-                    //padding: 1,
-                    //animate: false,
-                    //nodeRepulsion: function( node ){ return 2048; },
-                    fit: true,
-                    //gravity: 0.5
-                }
-            });
-
-            function makePopper(ele) {
-                let ref = ele.popperRef(); // used only for positioning
-
-                ele.tippy = tippy(ref, { // tippy options:
-                    content: () => {
-                        let content = document.createElement('div');
-
-                        content.innerHTML = ele.id();
-
-                        return content;
-                    },
-                    trigger: 'manual' // probably want manual mode
-                });
+                        return response.json();
+                    })
+                    .then(data => data)
+                    .catch(err => {
+                        throw new Error(
+                            'Failed to fetch from GSheets API. Check your Sheet Id and the public availability of your GSheet.'
+                        );
+                    });
+            } catch (err) {
+                throw new Error(`General error when fetching GSheet: ${err}`);
             }
-
-            cy.ready(function () {
-                cy.elements().forEach(function (ele) {
-                    makePopper(ele);
-                });
-            });
-
-            cy.elements().unbind('mouseover');
-            cy.elements().bind('mouseover', (event) => event.target.tippy.show());
-
-            cy.elements().unbind('mouseout');
-            cy.elements().bind('mouseout', (event) => event.target.tippy.hide());
-
-            cy.on('mouseover', 'node', function (e) {
-                var sel = e.target;
-                cy.elements().difference(sel.incomers()).difference(sel.outgoers()).not(sel).addClass('semitransp');
-                sel.addClass('highlight').outgoers().addClass('highlight');
-                sel.addClass('highlight').incomers().addClass('highlight');
-            });
-
-            cy.on('mouseout', 'node', function (e) {
-                var sel = e.target;
-                cy.elements().removeClass('semitransp');
-                sel.removeClass('highlight').outgoers().removeClass('highlight');
-                sel.removeClass('highlight').incomers().removeClass('highlight');
-            });
         };
 
-        printRet(ret);
+        function matchValues(valToMatch, valToMatchAgainst, matchingType) {
+            try {
+                if (typeof valToMatch != 'undefined') {
+                    valToMatch = valToMatch.toLowerCase().trim();
+                    valToMatchAgainst = valToMatchAgainst.toLowerCase().trim();
+
+                    if (matchingType === 'strict') {
+                        return valToMatch === valToMatchAgainst;
+                    }
+
+                    if (matchingType === 'loose') {
+                        return (
+                            valToMatch.includes(valToMatchAgainst) ||
+                            valToMatch == valToMatchAgainst
+                        );
+                    }
+                }
+            } catch (e) {
+                console.log(`error in matchValues: ${e.message}`);
+                return false;
+            }
+
+            return false;
+        }
+
+        function filterResults(resultsToFilter, filter, options) {
+            let filteredData = [];
+
+            // now we have a list of rows, we can filter by various things
+            return resultsToFilter.filter(item => {
+
+                // item data shape
+                // item = {
+                //   'Module Name': 'name of module',
+                //   ...
+                //   Department: 'Computer science'
+                // }
+
+                let addRow = null;
+                let filterMatches = [];
+
+                if (
+                    typeof item === 'undefined' ||
+                    item.length <= 0 ||
+                    Object.keys(item).length <= 0
+                ) {
+                    return false;
+                }
+
+                Object.keys(filter).forEach(key => {
+                    const filterValue = filter[key]; // e.g. 'archaeology'
+
+                    // need to find a matching item object key in case of case differences
+                    const itemKey = Object.keys(item).find(thisKey => thisKey.toLowerCase().trim() === key.toLowerCase().trim());
+                    const itemValue = item[itemKey]; // e.g. 'department' or 'undefined'
+
+                    filterMatches.push(
+                        matchValues(itemValue, filterValue, options.matching || 'loose')
+                    );
+                });
+
+                if (options.operator === 'or') {
+                    addRow = filterMatches.some(match => match === true);
+                }
+
+                if (options.operator === 'and') {
+                    addRow = filterMatches.every(match => match === true);
+                }
+
+                return addRow;
+            });
+        }
+
+        function processGSheetResults(
+            JSONResponse,
+            returnAllResults,
+            filter,
+            filterOptions
+        ) {
+            const data = JSONResponse.values;
+            const startRow = 1; // skip the header row(1), don't need it
+
+            let processedResults = [{}];
+            let colNames = {};
+
+            for (let i = 0; i < data.length; i++) {
+                // Rows
+                const thisRow = data[i];
+
+                for (let j = 0; j < thisRow.length; j++) {
+                    // Columns/cells
+                    const cellValue = thisRow[j];
+                    const colNameToAdd = colNames[j]; // this will be undefined on the first pass
+
+                    if (i < startRow) {
+                        colNames[j] = cellValue;
+                        continue; // skip the header row
+                    }
+
+                    if (typeof processedResults[i] === 'undefined') {
+                        processedResults[i] = {};
+                    }
+
+                    if (typeof colNameToAdd !== 'undefined' && colNameToAdd.length > 0) {
+                        processedResults[i][colNameToAdd] = cellValue;
+                    }
+                }
+            }
+
+            // make sure we're only returning valid, filled data items
+            processedResults = processedResults.filter(
+                result => Object.keys(result).length
+            );
+
+            // if we're not filtering, then return all results
+            if (returnAllResults || !filter) {
+                return processedResults;
+            }
+
+            return filterResults(processedResults, filter, filterOptions);
+        }
+
+        function gsheetProcessor(options, callback, onError) {
+            const { apiKey, sheetId, sheetName, sheetNumber, returnAllResults, filter, filterOptions } = options
+
+            if (!options.apiKey || options.apiKey === undefined) {
+                throw new Error('Missing Sheets API key');
+            }
+
+            return GSheetsapi({
+                apiKey,
+                sheetId,
+                sheetName,
+                sheetNumber
+            })
+                .then(result => {
+                    const filteredResults = processGSheetResults(
+                        result,
+                        returnAllResults || false,
+                        filter || false,
+                        filterOptions || {
+                            operator: 'or',
+                            matching: 'loose'
+                        }
+                    );
+
+                    callback(filteredResults);
+                })
+                .catch(err => onError(err.message));
+        };
+
+        gsheetProcessor(
+            {
+                sheetId: "1z92C5CPb5CNhkZ8d7sLNJAb0jc-A6NyUvlK6VtlIk50",
+                sheetNumber: 1,
+                returnAllResults: true,
+                apiKey: "AIzaSyD4ZoTrXMfF7mhAMVNNiensNsWL5XC6Sqo",
+            },
+            (results) => {
+                var parsedData = [];
+                results.forEach((result) => {
+                    var personName = result["Person Name"];
+                    if (personName) {
+                        let node = { data: { id: personName }, style: { 'background-color': result["Circle Color"], 'color': result["Text Color"] } };
+                        parsedData.push(node);
+                    }
+                });
+
+                results.forEach((result) => {
+                    var relationshipNameA = result["Relationship Name A"];
+                    var relationshipNameB = result["Relationship Name B"];
+                    if (relationshipNameA && relationshipNameB) {
+                        let edge = { data: { id: relationshipNameA + '↔' + relationshipNameB, source: relationshipNameA, target: relationshipNameB } };
+                        parsedData.push(edge);
+                    }
+                });
+
+                var cy = cytoscape({
+                    container: document.getElementById('cy'),
+
+                    style: [
+                        {
+                            selector: 'node',
+                            style: {
+                                'width': 20,
+                                'height': 20,
+                                'border-width': '1px',
+                                //'border-color': '#262626',
+                                'border-opacity': 0.5,
+                                //'background-color': '#666',
+                                'label': 'data(id)',
+                                'text-valign': 'center',
+                                'font-size': 3,
+                                //'text-background-color': '#1b1b1b',
+                                'text-background-opacity': 0,
+                                'text-background-shape': 'rectangle',
+                                //'text-background-padding': '10px'
+                            }
+                        },
+
+                        {
+                            selector: 'edge',
+                            style: {
+                                'width': 1,
+                                'line-color': '#ccc',
+                                //'target-arrow-color': '#ccc',
+                                //'target-arrow-shape': 'triangle',
+                                'curve-style': 'bezier',
+                                'line-opacity': 1,
+                            }
+                        },
+
+                        {
+                            selector: 'node.highlight',
+                            style: {
+                                'border-color': '#FFF',
+                                'border-width': '2px'
+                            }
+                        },
+
+                        {
+                            selector: 'node.semitransp',
+                            style: { 'opacity': '0.1' }
+                        },
+
+                        {
+                            selector: 'edge.highlight',
+                            style: { 'mid-target-arrow-color': '#FFF' }
+                        },
+
+                        {
+                            selector: 'edge.semitransp',
+                            style: { 'opacity': '0.1' }
+                        }
+                    ],
+
+                    layout: {
+                        name: 'cose',
+                        randomize: true,
+                        quality: "default",
+                        idealEdgeLength: 1,
+                        //padding: 1,
+                        animate: true,
+                        //nodeRepulsion: function( node ){ return 2048; },
+                        fit: true,
+                        gravity: 0.5,
+                        animationDuration: 1000
+                    },
+
+                    elements: parsedData
+                    ////elements: [{ data: { id: 'Ty' }, style: { 'background-color': '#0000FF', width: 40, height: 40, 'background-opacity': 0.5, 'font-size': 10, color: '#FFFFFF' } }, { data: { id: 'Ally' }, style: { 'background-color': '#0000FF', width: 40, height: 40, 'background-opacity': 0.5, 'font-size': 10, color: '#FFFFFF' } }, { data: { id: 'Amanda' }, style: { 'background-color': '#0000FF', width: 40, height: 40, 'background-opacity': 0.5, 'font-size': 10, color: '#FFFFFF' } }, { data: { id: 'Chara' }, style: { 'background-color': '#0000FF', width: 40, height: 40, 'background-opacity': 0.5, 'font-size': 10, color: '#FFFFFF' } }, { data: { id: 'Joshua' }, style: { 'background-color': '#0000FF', width: 40, height: 40, 'background-opacity': 0.5, 'font-size': 10, color: '#FFFFFF' } }, { data: { id: 'Alex' }, style: { 'background-color': '#0000FF', width: 40, height: 40, 'background-opacity': 0.5, 'font-size': 10, color: '#FFFFFF' } }, { data: { id: 'Kris' }, style: { 'background-color': '#0000FF', width: 40, height: 40, 'background-opacity': 0.5, 'font-size': 10, color: '#FFFFFF' } }, { data: { id: 'Haley' }, style: { 'background-color': '#0000FF', width: 40, height: 40, 'background-opacity': 0.5, 'font-size': 10, color: '#FFFFFF' } }, { data: { id: 'Abzi' }, style: { 'background-color': '#0000FF', width: 40, height: 40, 'background-opacity': 0.5, 'font-size': 10, color: '#FFFFFF' } }, { data: { id: 'Andrew' }, style: { 'background-color': '#0000FF', width: 40, height: 40, 'background-opacity': 0.5, 'font-size': 10, color: '#FFFFFF' } }, { data: { id: 'Emma' }, style: { 'background-color': '#0000FF', width: 40, height: 40, 'background-opacity': 0.5, 'font-size': 10, color: '#FFFFFF' } }, { data: { id: 'Aliah' }, style: { 'background-color': '#0000FF', width: 40, height: 40, 'background-opacity': 0.5, 'font-size': 10, color: '#FFFFFF' } }, { data: { id: 'Eowyn' }, style: { 'background-color': '#0000FF', width: 40, height: 40, 'background-opacity': 0.5, 'font-size': 10, color: '#FFFFFF' } }, { data: { id: 'Jess' }, style: { 'background-color': '#0000FF', width: 40, height: 40, 'background-opacity': 0.5, 'font-size': 10, color: '#FFFFFF' } }, { data: { id: 'Winter' }, style: { 'background-color': '#0000FF', width: 40, height: 40, 'background-opacity': 0.5, 'font-size': 10, color: '#FFFFFF' } }, { data: { id: 'Danilo' }, style: { 'background-color': '#0000FF', width: 40, height: 40, 'background-opacity': 0.5, 'font-size': 10, color: '#FFFFFF' } }, { data: { id: 'Ivan' }, style: { 'background-color': '#0000FF', width: 40, height: 40, 'background-opacity': 0.5, 'font-size': 10, color: '#FFFFFF' } }, { data: { id: 'Kim' }, style: { 'background-color': '#0000FF', width: 40, height: 40, 'background-opacity': 0.5, 'font-size': 10, color: '#FFFFFF' } }, { data: { id: 'Quazie' }, style: { 'background-color': '#0000FF', width: 40, height: 40, 'background-opacity': 0.5, 'font-size': 10, color: '#FFFFFF' } }, { data: { id: 'George' }, style: { 'background-color': '#0000FF', width: 40, height: 40, 'background-opacity': 0.5, 'font-size': 10, color: '#FFFFFF' } }, { data: { id: 'Heather' }, style: { 'background-color': '#0000FF', width: 40, height: 40, 'background-opacity': 0.5, 'font-size': 10, color: '#FFFFFF' } }, { data: { id: 'Ray' }, style: { 'background-color': '#0000FF', width: 40, height: 40, 'background-opacity': 0.5, 'font-size': 10, color: '#FFFFFF' } }, { data: { id: 'Shell' }, style: { 'background-color': '#0000FF', width: 40, height: 40, 'background-opacity': 0.5, 'font-size': 10, color: '#FFFFFF' } }, { data: { id: 'Katie' }, style: { 'background-color': '#0000FF', width: 40, height: 40, 'background-opacity': 0.5, 'font-size': 10, color: '#FFFFFF' } }, { data: { id: 'Jesse' }, style: { 'background-color': '#0000FF', width: 40, height: 40, 'background-opacity': 0.5, 'font-size': 10, color: '#FFFFFF' } }, { data: { id: 'Ty↔Ally', source: 'Ty', target: 'Ally' }, style: { 'line-opacity': 1 } }, { data: { id: 'Ty↔Amanda', source: 'Ty', target: 'Amanda' }, style: { 'line-opacity': 1 } }, { data: { id: 'Ally↔Chara', source: 'Ally', target: 'Chara' }, style: { 'line-opacity': 1 } }, { data: { id: 'Chara↔Alex', source: 'Chara', target: 'Alex' }, style: { 'line-opacity': 1 } }, { data: { id: 'Chara↔Kris', source: 'Chara', target: 'Kris' }, style: { 'line-opacity': 1 } }, { data: { id: 'Amanda↔Joshua', source: 'Amanda', target: 'Joshua' }, style: { 'line-opacity': 1 } }, { data: { id: 'Kris↔Haley', source: 'Kris', target: 'Haley' }, style: { 'line-opacity': 1 } }, { data: { id: 'Alex↔Abzi', source: 'Alex', target: 'Abzi' }, style: { 'line-opacity': 1 } }, { data: { id: 'Alex↔Andrew', source: 'Alex', target: 'Andrew' }, style: { 'line-opacity': 1 } }, { data: { id: 'Emma↔Andrew', source: 'Emma', target: 'Andrew' }, style: { 'line-opacity': 1 } }, { data: { id: 'Emma↔Alex', source: 'Emma', target: 'Alex' }, style: { 'line-opacity': 1 } }, { data: { id: 'Emma↔Aliah', source: 'Emma', target: 'Aliah' }, style: { 'line-opacity': 1 } }, { data: { id: 'Abzi↔Eowyn', source: 'Abzi', target: 'Eowyn' }, style: { 'line-opacity': 1 } }, { data: { id: 'Eowyn↔Jess', source: 'Eowyn', target: 'Jess' }, style: { 'line-opacity': 1 } }, { data: { id: 'Abzi↔Winter', source: 'Abzi', target: 'Winter' }, style: { 'line-opacity': 1 } }, { data: { id: 'Winter↔Danilo', source: 'Winter', target: 'Danilo' }, style: { 'line-opacity': 1 } }, { data: { id: 'Winter↔Ivan', source: 'Winter', target: 'Ivan' }, style: { 'line-opacity': 1 } }, { data: { id: 'Winter↔Kim', source: 'Winter', target: 'Kim' }, style: { 'line-opacity': 1 } }, { data: { id: 'Haley↔Quazie', source: 'Haley', target: 'Quazie' }, style: { 'line-opacity': 1 } }, { data: { id: 'George↔Heather', source: 'George', target: 'Heather' }, style: { 'line-opacity': 1 } }, { data: { id: 'Ray↔Shell', source: 'Ray', target: 'Shell' }, style: { 'line-opacity': 1 } }, { data: { id: 'Abzi↔Heather', source: 'Abzi', target: 'Heather' }, style: { 'line-opacity': 1 } }, { data: { id: 'George↔Alex', source: 'George', target: 'Alex' }, style: { 'line-opacity': 1 } }, { data: { id: 'Katie↔Jesse', source: 'Katie', target: 'Jesse' }, style: { 'line-opacity': 1 } }]
+                });
+
+                function makePopper(ele) {
+                    let ref = ele.popperRef(); // used only for positioning
+
+                    ele.tippy = tippy(ref, { // tippy options:
+                        content: () => {
+                            let content = document.createElement('div');
+
+                            content.innerHTML = ele.id();
+
+                            return content;
+                        },
+                        trigger: 'manual' // probably want manual mode
+                    });
+                }
+
+                cy.ready(function () {
+                    cy.elements().forEach(function (ele) {
+                        makePopper(ele);
+                    });
+                });
+
+                cy.elements().unbind('mouseover');
+                cy.elements().bind('mouseover', (event) => event.target.tippy.show());
+
+                cy.elements().unbind('mouseout');
+                cy.elements().bind('mouseout', (event) => event.target.tippy.hide());
+
+                cy.on('mouseover', 'node', function (e) {
+                    var sel = e.target;
+                    cy.elements().difference(sel.incomers()).difference(sel.outgoers()).not(sel).addClass('semitransp');
+                    sel.addClass('highlight').outgoers().addClass('highlight');
+                    sel.addClass('highlight').incomers().addClass('highlight');
+                });
+
+                cy.on('mouseout', 'node', function (e) {
+                    var sel = e.target;
+                    cy.elements().removeClass('semitransp');
+                    sel.removeClass('highlight').outgoers().removeClass('highlight');
+                    sel.removeClass('highlight').incomers().removeClass('highlight');
+                });
+            },
+            (error) => {
+                document.getElementById("cy").innerHTML = `<p>error: ${error}</p>`;
+            }
+        );
     </script>
 </body>
 </html>

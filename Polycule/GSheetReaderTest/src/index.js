@@ -1,4 +1,4 @@
-function GSheetsapi({ apiKey, sheetId, sheetName, sheetNumber = 1 }) {
+﻿function GSheetsapi({ apiKey, sheetId, sheetName, sheetNumber = 1 }) {
     try {
         const sheetNameStr = sheetName && sheetName !== '' ? encodeURIComponent(sheetName) : `Sheet${sheetNumber}`
         const sheetsUrl = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${sheetNameStr}?dateTimeRenderOption=FORMATTED_STRING&majorDimension=ROWS&valueRenderOption=FORMATTED_VALUE&key=${apiKey}`;
@@ -183,11 +183,37 @@ gsheetProcessor(
         apiKey: "AIzaSyD4ZoTrXMfF7mhAMVNNiensNsWL5XC6Sqo",
     },
     (results) => {
+
+        var parsedData = [];
         results.forEach((result) => {
-            document.getElementById(
-                "app"
-            ).innerHTML += `<p>${result["Name"]}</p>`;
+            var personName = result["Person Name"];
+            if (personName != "" && personName != "undefined") {
+                let node = { data: { id: personName }, style: { 'background-color': result["Circle Color"], 'color': result["Text Color"] } };
+                parsedData.push(node);
+            }
         });
+
+        results.forEach((result) => {
+            var relationshipNameA = result["Relationship Name A"];
+            var relationshipNameB = result["Relationship Name B"];
+            if (relationshipNameA != "" && relationshipNameA != "undefined" && relationshipNameB != "" && relationshipNameB != "undefined") {
+                let edge = { data: { id: relationshipNameA + '↔' + relationshipNameB, source: relationshipNameA, target: relationshipNameB } };
+                parsedData.push(edge);
+            }
+        });
+
+        var dataFinal = JSON.stringify(parsedData);
+        var jsonData = JSON.parse(dataFinal);
+
+        document.getElementById(
+            "app"
+        ).innerHTML += `<p>${dataFinal}</p>`;
+
+        ////results.forEach((result) => {
+        ////    document.getElementById(
+        ////        "app"
+        ////    ).innerHTML += `<p>${result["Person Name"]} ${result["Circle Color"]} ${result["Text Color"]} ${result["Relationship Name A"]} ${result["Relationship Name B"]}</p>`;
+        ////});
     },
     (error) => {
         document.getElementById("app").innerHTML += `<p>error: ${error}</p>`;
