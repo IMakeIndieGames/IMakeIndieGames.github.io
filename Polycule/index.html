@@ -232,11 +232,17 @@
             },
             (results) => {
                 var parsedData = [];
+                var socialLookup = {};
                 results.forEach((result) => {
                     var personName = result["Person Name"];
                     if (personName) {
                         let node = { data: { id: personName }, style: { 'background-color': result["Circle Color"], 'color': result["Text Color"] } };
                         parsedData.push(node);
+
+                        var social = result["Social Link (Optional)"];
+                        if (social) {
+                            socialLookup[personName] = social;
+                        }
                     }
                 });
 
@@ -322,7 +328,6 @@
                     },
 
                     elements: parsedData
-                    ////elements: [{ data: { id: 'Ty' }, style: { 'background-color': '#0000FF', width: 40, height: 40, 'background-opacity': 0.5, 'font-size': 10, color: '#FFFFFF' } }, { data: { id: 'Ally' }, style: { 'background-color': '#0000FF', width: 40, height: 40, 'background-opacity': 0.5, 'font-size': 10, color: '#FFFFFF' } }, { data: { id: 'Amanda' }, style: { 'background-color': '#0000FF', width: 40, height: 40, 'background-opacity': 0.5, 'font-size': 10, color: '#FFFFFF' } }, { data: { id: 'Chara' }, style: { 'background-color': '#0000FF', width: 40, height: 40, 'background-opacity': 0.5, 'font-size': 10, color: '#FFFFFF' } }, { data: { id: 'Joshua' }, style: { 'background-color': '#0000FF', width: 40, height: 40, 'background-opacity': 0.5, 'font-size': 10, color: '#FFFFFF' } }, { data: { id: 'Alex' }, style: { 'background-color': '#0000FF', width: 40, height: 40, 'background-opacity': 0.5, 'font-size': 10, color: '#FFFFFF' } }, { data: { id: 'Kris' }, style: { 'background-color': '#0000FF', width: 40, height: 40, 'background-opacity': 0.5, 'font-size': 10, color: '#FFFFFF' } }, { data: { id: 'Haley' }, style: { 'background-color': '#0000FF', width: 40, height: 40, 'background-opacity': 0.5, 'font-size': 10, color: '#FFFFFF' } }, { data: { id: 'Abzi' }, style: { 'background-color': '#0000FF', width: 40, height: 40, 'background-opacity': 0.5, 'font-size': 10, color: '#FFFFFF' } }, { data: { id: 'Andrew' }, style: { 'background-color': '#0000FF', width: 40, height: 40, 'background-opacity': 0.5, 'font-size': 10, color: '#FFFFFF' } }, { data: { id: 'Emma' }, style: { 'background-color': '#0000FF', width: 40, height: 40, 'background-opacity': 0.5, 'font-size': 10, color: '#FFFFFF' } }, { data: { id: 'Aliah' }, style: { 'background-color': '#0000FF', width: 40, height: 40, 'background-opacity': 0.5, 'font-size': 10, color: '#FFFFFF' } }, { data: { id: 'Eowyn' }, style: { 'background-color': '#0000FF', width: 40, height: 40, 'background-opacity': 0.5, 'font-size': 10, color: '#FFFFFF' } }, { data: { id: 'Jess' }, style: { 'background-color': '#0000FF', width: 40, height: 40, 'background-opacity': 0.5, 'font-size': 10, color: '#FFFFFF' } }, { data: { id: 'Winter' }, style: { 'background-color': '#0000FF', width: 40, height: 40, 'background-opacity': 0.5, 'font-size': 10, color: '#FFFFFF' } }, { data: { id: 'Danilo' }, style: { 'background-color': '#0000FF', width: 40, height: 40, 'background-opacity': 0.5, 'font-size': 10, color: '#FFFFFF' } }, { data: { id: 'Ivan' }, style: { 'background-color': '#0000FF', width: 40, height: 40, 'background-opacity': 0.5, 'font-size': 10, color: '#FFFFFF' } }, { data: { id: 'Kim' }, style: { 'background-color': '#0000FF', width: 40, height: 40, 'background-opacity': 0.5, 'font-size': 10, color: '#FFFFFF' } }, { data: { id: 'Quazie' }, style: { 'background-color': '#0000FF', width: 40, height: 40, 'background-opacity': 0.5, 'font-size': 10, color: '#FFFFFF' } }, { data: { id: 'George' }, style: { 'background-color': '#0000FF', width: 40, height: 40, 'background-opacity': 0.5, 'font-size': 10, color: '#FFFFFF' } }, { data: { id: 'Heather' }, style: { 'background-color': '#0000FF', width: 40, height: 40, 'background-opacity': 0.5, 'font-size': 10, color: '#FFFFFF' } }, { data: { id: 'Ray' }, style: { 'background-color': '#0000FF', width: 40, height: 40, 'background-opacity': 0.5, 'font-size': 10, color: '#FFFFFF' } }, { data: { id: 'Shell' }, style: { 'background-color': '#0000FF', width: 40, height: 40, 'background-opacity': 0.5, 'font-size': 10, color: '#FFFFFF' } }, { data: { id: 'Katie' }, style: { 'background-color': '#0000FF', width: 40, height: 40, 'background-opacity': 0.5, 'font-size': 10, color: '#FFFFFF' } }, { data: { id: 'Jesse' }, style: { 'background-color': '#0000FF', width: 40, height: 40, 'background-opacity': 0.5, 'font-size': 10, color: '#FFFFFF' } }, { data: { id: 'Ty↔Ally', source: 'Ty', target: 'Ally' }, style: { 'line-opacity': 1 } }, { data: { id: 'Ty↔Amanda', source: 'Ty', target: 'Amanda' }, style: { 'line-opacity': 1 } }, { data: { id: 'Ally↔Chara', source: 'Ally', target: 'Chara' }, style: { 'line-opacity': 1 } }, { data: { id: 'Chara↔Alex', source: 'Chara', target: 'Alex' }, style: { 'line-opacity': 1 } }, { data: { id: 'Chara↔Kris', source: 'Chara', target: 'Kris' }, style: { 'line-opacity': 1 } }, { data: { id: 'Amanda↔Joshua', source: 'Amanda', target: 'Joshua' }, style: { 'line-opacity': 1 } }, { data: { id: 'Kris↔Haley', source: 'Kris', target: 'Haley' }, style: { 'line-opacity': 1 } }, { data: { id: 'Alex↔Abzi', source: 'Alex', target: 'Abzi' }, style: { 'line-opacity': 1 } }, { data: { id: 'Alex↔Andrew', source: 'Alex', target: 'Andrew' }, style: { 'line-opacity': 1 } }, { data: { id: 'Emma↔Andrew', source: 'Emma', target: 'Andrew' }, style: { 'line-opacity': 1 } }, { data: { id: 'Emma↔Alex', source: 'Emma', target: 'Alex' }, style: { 'line-opacity': 1 } }, { data: { id: 'Emma↔Aliah', source: 'Emma', target: 'Aliah' }, style: { 'line-opacity': 1 } }, { data: { id: 'Abzi↔Eowyn', source: 'Abzi', target: 'Eowyn' }, style: { 'line-opacity': 1 } }, { data: { id: 'Eowyn↔Jess', source: 'Eowyn', target: 'Jess' }, style: { 'line-opacity': 1 } }, { data: { id: 'Abzi↔Winter', source: 'Abzi', target: 'Winter' }, style: { 'line-opacity': 1 } }, { data: { id: 'Winter↔Danilo', source: 'Winter', target: 'Danilo' }, style: { 'line-opacity': 1 } }, { data: { id: 'Winter↔Ivan', source: 'Winter', target: 'Ivan' }, style: { 'line-opacity': 1 } }, { data: { id: 'Winter↔Kim', source: 'Winter', target: 'Kim' }, style: { 'line-opacity': 1 } }, { data: { id: 'Haley↔Quazie', source: 'Haley', target: 'Quazie' }, style: { 'line-opacity': 1 } }, { data: { id: 'George↔Heather', source: 'George', target: 'Heather' }, style: { 'line-opacity': 1 } }, { data: { id: 'Ray↔Shell', source: 'Ray', target: 'Shell' }, style: { 'line-opacity': 1 } }, { data: { id: 'Abzi↔Heather', source: 'Abzi', target: 'Heather' }, style: { 'line-opacity': 1 } }, { data: { id: 'George↔Alex', source: 'George', target: 'Alex' }, style: { 'line-opacity': 1 } }, { data: { id: 'Katie↔Jesse', source: 'Katie', target: 'Jesse' }, style: { 'line-opacity': 1 } }]
                 });
 
                 function makePopper(ele) {
@@ -364,6 +369,13 @@
                     cy.elements().removeClass('semitransp');
                     sel.removeClass('highlight').outgoers().removeClass('highlight');
                     sel.removeClass('highlight').incomers().removeClass('highlight');
+                });
+
+                cy.on('click', 'node', function (e) {
+                    var personId = e.target.id();
+                    if (personId && socialLookup[personId]) {
+                        window.open(socialLookup[personId], '_blank');
+                    }
                 });
             },
             (error) => {
