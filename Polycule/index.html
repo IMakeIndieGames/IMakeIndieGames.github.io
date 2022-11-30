@@ -82,6 +82,33 @@
             document.getElementById("showLineKeyButton").style.display = 'block';
         }
 
+        function rgbToHsl(color) {
+            var r = parseInt(color.substr(1, 2), 16); // Grab the hex representation of red (chars 1-2) and convert to decimal (base 10).
+            var g = parseInt(color.substr(3, 2), 16);
+            var b = parseInt(color.substr(5, 2), 16);
+
+            r /= 255, g /= 255, b /= 255;
+            var max = Math.max(r, g, b), min = Math.min(r, g, b);
+            var h, s, l = (max + min) / 2;
+
+            if (max == min) {
+                h = s = 0; // achromatick
+                h = s = 0; // achromatick
+            } else {
+                var d = max - min;
+                s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+                switch (max) {
+                    case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+                    case g: h = (b - r) / d + 2; break;
+                    case b: h = (r - g) / d + 4; break;
+                }
+                h /= 6;
+            }
+
+            return [h, s, l];
+        }
+
+
         function GSheetsapi({ apiKey, sheetId, sheetName, sheetNumber = 1 }) {
             try {
                 const sheetNameStr = sheetName && sheetName !== '' ? encodeURIComponent(sheetName) : `Sheet${sheetNumber}`
@@ -276,11 +303,17 @@
                             parsedData.push(node);
                         }
                         else if (colorVal.startsWith('#')) {
-                            let node = { data: { id: personName }, style: { 'background-color': colorVal, 'border-color': colorVal } };
-                            parsedData.push(node);
+                            if (rgbToHsl(colorVal)[2] < 0.5) {
+                                let node = { data: { id: personName }, style: { 'background-color': colorVal, 'border-color': colorVal } };
+                                parsedData.push(node);
+                            }
+                            else {
+                                let node = { data: { id: personName }, style: { 'background-color': colorVal, 'border-color': colorVal, 'color': '#224' } };
+                                parsedData.push(node);
+                            }
                         }
-                        else  {
-                            let node = { data: { id: personName }, style: { 'background-image': colorVal, 'border-color': '#446', 'text-valign': 'bottom', 'color': '#224' } };
+                        else {
+                            let node = { data: { id: personName }, style: { 'background-image': colorVal, 'border-color': '#446', 'text-valign': 'bottom', 'color': '#224', 'text-margin-y': 1 } };
                             parsedData.push(node);
                         }
 
@@ -352,7 +385,7 @@
                                 'text-valign': 'center',
                                 'font-size': 4,
                                 'font-family': 'helvetica',
-                                'color': '#FFFFFF',
+                                'color': '#FFF',
                                 //'text-background-color': '#1b1b1b',
                                 'text-background-opacity': 0,
                                 'text-background-shape': 'rectangle',
