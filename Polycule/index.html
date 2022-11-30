@@ -299,7 +299,7 @@
                     var isSexual = false;
                     var isKinky = false;
                     var isNesting = false;
-                    var iscCommet = false;
+                    var iscComet = false;
                     var relationshipType = result["Relationship Type"];
                     var relationshipTypeString = "";
                     if (relationshipType) {
@@ -307,7 +307,7 @@
                         isSexual = relationshipType.includes('S');
                         isKinky = relationshipType.includes('K');
                         isNesting = relationshipType.includes('N');
-                        isCommet = relationshipType.includes('C');
+                        isComet = relationshipType.includes('C');
 
                         if (isRelationship) {
                             relationshipTypeString += "<br />Relationship";
@@ -322,7 +322,7 @@
                             relationshipTypeString += "<br />Kinky";
                         }
                         if (isCommet) {
-                            relationshipTypeString += "<br />Commet";
+                            relationshipTypeString += "<br />Comet";
                         }
                     }
 
