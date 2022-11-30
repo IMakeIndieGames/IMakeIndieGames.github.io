@@ -3,7 +3,7 @@
 <html>
 
 <head>
-    <title>The Seattle Polycule Map</title>
+    <title>The Seattle+ Polycule</title>
     <meta name="googlebot" content="noindex">
     <meta name="googlebot-news" content="nosnippet">
     <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1, maximum-scale=1">
@@ -62,7 +62,7 @@
     <!-- End Google Tag Manager (noscript) -->
 
     <div style="position:absolute;z-index:10;opacity:0.8">
-        <h1>The Seattle Polycule</h1>
+        <h1>The Seattle+ Polycule</h1>
         <p>
             Add new people/relationships <a href="https://docs.google.com/spreadsheets/d/1z92C5CPb5CNhkZ8d7sLNJAb0jc-A6NyUvlK6VtlIk50/edit#gid=0" target="_blank">here</a>!
             <!--<a id="showLineKeyButton" href="#" onclick="showLineKey();return false;">Info</a></p>
@@ -270,8 +270,19 @@
                 results.forEach((result) => {
                     var personName = result["Person Name"];
                     if (personName) {
-                        let node = { data: { id: personName }, style: { 'background-color': result["Color"], 'border-color': result["Color"] } };
-                        parsedData.push(node);
+                        var colorVal = result["Color or Photo URL"];
+                        if (!colorVal) {
+                            let node = { data: { id: personName }, style: { 'background-color': '#88AABB', 'border-color': '#88AABB' } };
+                            parsedData.push(node);
+                        }
+                        else if (colorVal.startsWith('#')) {
+                            let node = { data: { id: personName }, style: { 'background-color': colorVal, 'border-color': colorVal } };
+                            parsedData.push(node);
+                        }
+                        else  {
+                            let node = { data: { id: personName }, style: { 'background-image': 'https://i.imgur.com/O6WWqRK.png', 'border-color': '#446', 'text-valign': 'bottom', 'color': '#224' } };
+                            parsedData.push(node);
+                        }
 
                         var social = result["Social Link (Optional)"];
                         if (social) {
@@ -341,6 +352,9 @@
                                 'text-background-opacity': 0,
                                 'text-background-shape': 'rectangle',
                                 //'text-background-padding': '10px'
+                                //'background-image': 'https://upload.wikimedia.org/wikipedia/commons/b/b4/High_above_the_Cloud_the_Sun_Stays_the_Same.jpg',
+                                'background-fit': 'cover cover',
+                                'background-image-opacity': 1
                             }
                         },
 
