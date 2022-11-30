@@ -446,6 +446,13 @@
                         window.open(socialLookup[personId], '_blank');
                     }
                 });
+
+                cy.on('touchend', 'node', function (e) {
+                    var personId = e.target.id();
+                    if (personId && socialLookup[personId]) {
+                        window.open(socialLookup[personId], '_blank');
+                    }
+                });
             },
             (error) => {
                 document.getElementById("cy").innerHTML = `<p>error: ${error}</p>`;
