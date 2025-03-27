@@ -1,0 +1,521 @@
+﻿<!DOCTYPE>
+
+<html>
+
+<head>
+    <title>The Chara Polycule</title>
+    <meta name="googlebot" content="noindex">
+    <meta name="googlebot-news" content="nosnippet">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1, maximum-scale=1">
+
+    <script src="https://unpkg.com/cytoscape/dist/cytoscape.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.18.2/cytoscape.min.js"></script>
+    <script src="https://unpkg.com/layout-base/layout-base.js"></script>
+    <script src="https://unpkg.com/cose-base/cose-base.js"></script>
+    <script src="https://unpkg.com/cytoscape-fcose/cytoscape-fcose.js"></script>
+    <script src="https://unpkg.com/layout-base/layout-base.js"></script>
+    <script src="https://unpkg.com/cose-base/cose-base.js"></script>
+    <script src="cytoscape-cose-bilkent.js"></script>
+    <script src="https://unpkg.com/popper.js@1.14.7/dist/umd/popper.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/cytoscape-popper@1.0.4/cytoscape-popper.min.js"></script>
+    <script src="https://unpkg.com/tippy.js@4.0.1/umd/index.all.min.js"></script>
+    <script src="https://unpkg.com/layout-base/layout-base.js"></script>
+    <script src="https://unpkg.com/cose-base/cose-base.js"></script>
+
+    <!-- Google Tag Manager -->
+    <script>
+        (function (w, d, s, l, i) {
+            w[l] = w[l] || []; w[l].push({
+                'gtm.start':
+                    new Date().getTime(), event: 'gtm.js'
+            }); var f = d.getElementsByTagName(s)[0],
+                j = d.createElement(s), dl = l != 'dataLayer' ? '&l=' + l : ''; j.async = true; j.src =
+                    'https://www.googletagmanager.com/gtm.js?id=' + i + dl; f.parentNode.insertBefore(j, f);
+        })(window, document, 'script', 'dataLayer', 'GTM-KKTCHXJ');</script>
+    <!-- End Google Tag Manager -->
+
+    <style>
+        body {
+            font-family: helvetica;
+            font-size: 14px;
+        }
+
+        #cy {
+            width: 100%;
+            height: 100%;
+            z-index: 9;
+        }
+
+        h1 {
+            opacity: 0.8;
+            font-size: 2em;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Google Tag Manager (noscript) -->
+    <noscript>
+        <iframe src="https://www.googletagmanager.com/ns.html?id=GTM-KKTCHXJ"
+                height="0" width="0" style="display:none;visibility:hidden"></iframe>
+    </noscript>
+    <!-- End Google Tag Manager (noscript) -->
+
+    <div style="position:absolute;z-index:10;opacity:0.8">
+        <h1>The Chara Polycule</h1>
+        <p>
+            Add new people/relationships <a href="https://docs.google.com/spreadsheets/d/1w-ILIBRA7vJfyFaKzK1OrQ9NDSTLakLe9S6kxzEtEsA/edit#gid=0" target="_blank">here</a>!
+            <!--<a id="showLineKeyButton" href="#" onclick="showLineKey();return false;">Info</a></p>
+            <div id="lineKey" style="display:none"><b>Opaque:</b> Relationship<br /><b>Thick:</b> Nesting<br /><b>Solid:</b> Sexual<br /><b>Red:</b> Kinky<br /><a id="hideLineKeyButton" href="#" onclick="hideLineKey();return false;">Hide info</a></div>-->
+    </div>
+
+    <div id="cy"></div>
+
+    <script>
+        function showLineKey() {
+            document.getElementById("lineKey").style.display = 'block';
+            document.getElementById("showLineKeyButton").style.display = 'none';
+        }
+
+        function hideLineKey() {
+            document.getElementById("lineKey").style.display = 'none';
+            document.getElementById("showLineKeyButton").style.display = 'block';
+        }
+
+        function rgbToHsl(color) {
+            var r = parseInt(color.substr(1, 2), 16); // Grab the hex representation of red (chars 1-2) and convert to decimal (base 10).
+            var g = parseInt(color.substr(3, 2), 16);
+            var b = parseInt(color.substr(5, 2), 16);
+
+            r /= 255, g /= 255, b /= 255;
+            var max = Math.max(r, g, b), min = Math.min(r, g, b);
+            var h, s, l = (max + min) / 2;
+
+            if (max == min) {
+                h = s = 0; // achromatick
+                h = s = 0; // achromatick
+            } else {
+                var d = max - min;
+                s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+                switch (max) {
+                    case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+                    case g: h = (b - r) / d + 2; break;
+                    case b: h = (r - g) / d + 4; break;
+                }
+                h /= 6;
+            }
+
+            return [h, s, l];
+        }
+
+
+        function GSheetsapi({ apiKey, sheetId, sheetName, sheetNumber = 1 }) {
+            try {
+                const sheetNameStr = sheetName && sheetName !== '' ? encodeURIComponent(sheetName) : `Sheet${sheetNumber}`
+                const sheetsUrl = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${sheetNameStr}?dateTimeRenderOption=FORMATTED_STRING&majorDimension=ROWS&valueRenderOption=FORMATTED_VALUE&key=${apiKey}`;
+
+                return fetch(sheetsUrl)
+                    .then(response => {
+                        if (!response.ok) {
+                            console.log('there is an error in the gsheets response');
+                            throw new Error('Error fetching GSheet');
+                        }
+                        return response.json();
+                    })
+                    .then(data => data)
+                    .catch(err => {
+                        throw new Error(
+                            'Failed to fetch from GSheets API. Check your Sheet Id and the public availability of your GSheet.'
+                        );
+                    });
+            } catch (err) {
+                throw new Error(`General error when fetching GSheet: ${err}`);
+            }
+        };
+
+        function matchValues(valToMatch, valToMatchAgainst, matchingType) {
+            try {
+                if (typeof valToMatch != 'undefined') {
+                    valToMatch = valToMatch.toLowerCase().trim();
+                    valToMatchAgainst = valToMatchAgainst.toLowerCase().trim();
+
+                    if (matchingType === 'strict') {
+                        return valToMatch === valToMatchAgainst;
+                    }
+
+                    if (matchingType === 'loose') {
+                        return (
+                            valToMatch.includes(valToMatchAgainst) ||
+                            valToMatch == valToMatchAgainst
+                        );
+                    }
+                }
+            } catch (e) {
+                console.log(`error in matchValues: ${e.message}`);
+                return false;
+            }
+
+            return false;
+        }
+
+        function filterResults(resultsToFilter, filter, options) {
+            let filteredData = [];
+
+            // now we have a list of rows, we can filter by various things
+            return resultsToFilter.filter(item => {
+
+                // item data shape
+                // item = {
+                //   'Module Name': 'name of module',
+                //   ...
+                //   Department: 'Computer science'
+                // }
+
+                let addRow = null;
+                let filterMatches = [];
+
+                if (
+                    typeof item === 'undefined' ||
+                    item.length <= 0 ||
+                    Object.keys(item).length <= 0
+                ) {
+                    return false;
+                }
+
+                Object.keys(filter).forEach(key => {
+                    const filterValue = filter[key]; // e.g. 'archaeology'
+
+                    // need to find a matching item object key in case of case differences
+                    const itemKey = Object.keys(item).find(thisKey => thisKey.toLowerCase().trim() === key.toLowerCase().trim());
+                    const itemValue = item[itemKey]; // e.g. 'department' or 'undefined'
+
+                    filterMatches.push(
+                        matchValues(itemValue, filterValue, options.matching || 'loose')
+                    );
+                });
+
+                if (options.operator === 'or') {
+                    addRow = filterMatches.some(match => match === true);
+                }
+
+                if (options.operator === 'and') {
+                    addRow = filterMatches.every(match => match === true);
+                }
+
+                return addRow;
+            });
+        }
+
+        function processGSheetResults(
+            JSONResponse,
+            returnAllResults,
+            filter,
+            filterOptions
+        ) {
+            const data = JSONResponse.values;
+            const startRow = 1; // skip the header row(1), don't need it
+
+            let processedResults = [{}];
+            let colNames = {};
+
+            for (let i = 0; i < data.length; i++) {
+                // Rows
+                const thisRow = data[i];
+
+                for (let j = 0; j < thisRow.length; j++) {
+                    // Columns/cells
+                    const cellValue = thisRow[j];
+                    const colNameToAdd = colNames[j]; // this will be undefined on the first pass
+
+                    if (i < startRow) {
+                        colNames[j] = cellValue;
+                        continue; // skip the header row
+                    }
+
+                    if (typeof processedResults[i] === 'undefined') {
+                        processedResults[i] = {};
+                    }
+
+                    if (typeof colNameToAdd !== 'undefined' && colNameToAdd.length > 0) {
+                        processedResults[i][colNameToAdd] = cellValue;
+                    }
+                }
+            }
+
+            // make sure we're only returning valid, filled data items
+            processedResults = processedResults.filter(
+                result => Object.keys(result).length
+            );
+
+            // if we're not filtering, then return all results
+            if (returnAllResults || !filter) {
+                return processedResults;
+            }
+
+            return filterResults(processedResults, filter, filterOptions);
+        }
+
+        function gsheetProcessor(options, callback, onError) {
+            const { apiKey, sheetId, sheetName, sheetNumber, returnAllResults, filter, filterOptions } = options
+
+            if (!options.apiKey || options.apiKey === undefined) {
+                throw new Error('Missing Sheets API key');
+            }
+
+            return GSheetsapi({
+                apiKey,
+                sheetId,
+                sheetName,
+                sheetNumber
+            })
+                .then(result => {
+                    const filteredResults = processGSheetResults(
+                        result,
+                        returnAllResults || false,
+                        filter || false,
+                        filterOptions || {
+                            operator: 'or',
+                            matching: 'loose'
+                        }
+                    );
+
+                    callback(filteredResults);
+                })
+                .catch(err => onError(err.message));
+        };
+
+        gsheetProcessor(
+            {
+                sheetId: "1w-ILIBRA7vJfyFaKzK1OrQ9NDSTLakLe9S6kxzEtEsA",
+                sheetNumber: 1,
+                returnAllResults: true,
+                apiKey: "AIzaSyD4ZoTrXMfF7mhAMVNNiensNsWL5XC6Sqo",
+            },
+            (results) => {
+                var parsedData = [];
+                var socialLookup = {};
+                results.forEach((result) => {
+                    var personName = result["Person Name"];
+                    if (personName) {
+                        var colorVal = result["Color or Photo URL"];
+                        if (!colorVal) {
+                            let node = { data: { id: personName }, style: { 'background-color': '#88AABB', 'border-color': '#88AABB' } };
+                            parsedData.push(node);
+                        }
+                        else if (colorVal.startsWith('#')) {
+                            if (rgbToHsl(colorVal)[2] < 0.5) {
+                                let node = { data: { id: personName }, style: { 'background-color': colorVal, 'border-color': colorVal } };
+                                parsedData.push(node);
+                            }
+                            else {
+                                let node = { data: { id: personName }, style: { 'background-color': colorVal, 'border-color': colorVal, 'color': '#224' } };
+                                parsedData.push(node);
+                            }
+                        }
+                        else {
+                            let node = { data: { id: personName }, style: { 'background-image': colorVal, 'border-color': '#446', 'text-valign': 'bottom', 'color': '#224', 'text-margin-y': 1 } };
+                            parsedData.push(node);
+                        }
+
+                        var social = result["Social Link (Optional)"];
+                        if (social) {
+                            socialLookup[personName] = social;
+                        }
+                    }
+                });
+
+                results.forEach((result) => {
+                    var relationshipNameA = result["Relationship Name A"];
+                    var relationshipNameB = result["Relationship Name B"];
+
+                    var isRelationship = true;
+                    var isSexual = false;
+                    var isKinky = false;
+                    var isNesting = false;
+                    var isComet = false;
+                    var isUndefined = false;
+                    var relationshipType = result["Relationship Type"];
+                    var relationshipTypeString = "";
+                    if (relationshipType) {
+                        isRelationship = relationshipType.includes('R');
+                        isSexual = relationshipType.includes('S');
+                        isKinky = relationshipType.includes('K');
+                        isNesting = relationshipType.includes('N');
+                        isComet = relationshipType.includes('C');
+                        isUndefined = relationshipType.includes('U');
+
+                        if (isRelationship) {
+                            relationshipTypeString += "<br />Relationship";
+                        }
+                        if (isNesting) {
+                            relationshipTypeString += "<br />Nesting";
+                        }
+                        if (isSexual) {
+                            relationshipTypeString += "<br />Sexual";
+                        }
+                        if (isKinky) {
+                            relationshipTypeString += "<br />Kinky";
+                        }
+                        if (isComet) {
+                            relationshipTypeString += "<br />Comet";
+                        }
+                        if (isUndefined) {
+                            relationshipTypeString += "<br />Undefined";
+                        }
+                    }
+
+                    if (relationshipNameA && relationshipNameB) {
+                        ////data: { id: relationshipNameA + '↔' + relationshipNameB + relationshipTypeString, source: relationshipNameA, target: relationshipNameB }, style: { 'line-fill': isKinky ? 'radial-gradient' : 'solid', 'line-style': isSexual ? 'solid' : 'dashed', 'width': isNesting ? 2.5 : 1, 'line-opacity': isRelationship ? 1 : 0.2 }
+                        let edge = {
+                            data: { id: relationshipNameA + '↔' + relationshipNameB + relationshipTypeString, source: relationshipNameA, target: relationshipNameB }, style: { 'line-fill': 'solid', 'line-style': 'solid', 'width': 1, 'line-opacity': 1 }
+                        };
+                        parsedData.push(edge);
+                    }
+                });
+
+                var cy = cytoscape({
+                    container: document.getElementById('cy'),
+
+                    style: [
+                        {
+                            selector: 'node',
+                            style: {
+                                'width': 20,
+                                'height': 20,
+                                'border-width': '1px',
+                                //'border-color': '#262626',
+                                'border-opacity': 0.5,
+                                //'background-color': '#666',
+                                'label': 'data(id)',
+                                'text-valign': 'center',
+                                'font-size': 4,
+                                'font-family': 'helvetica',
+                                'color': '#FFF',
+                                //'text-background-color': '#1b1b1b',
+                                'text-background-opacity': 0,
+                                'text-background-shape': 'rectangle',
+                                //'text-background-padding': '10px'
+                                //'background-image': 'https://upload.wikimedia.org/wikipedia/commons/b/b4/High_above_the_Cloud_the_Sun_Stays_the_Same.jpg',
+                                'background-fit': 'cover cover',
+                                'background-image-opacity': 1
+                            }
+                        },
+
+                        {
+                            selector: 'edge',
+                            style: {
+                                //'width': 1,
+                                'line-color': '#aac',
+                                //'target-arrow-color': '#ccc',
+                                //'target-arrow-shape': 'triangle',
+                                'curve-style': 'bezier',
+                                //'line-opacity': 1,
+                                //'line-fill': 'radial-gradient',
+                                'line-gradient-stop-colors': '#c00 #ccc',
+                                //'line-style': 'dashed',
+                                'line-cap': 'square'
+                            }
+                        },
+
+                        {
+                            selector: 'node.highlight',
+                            style: {
+                                //'border-color': '#FFF',
+                                'border-width': '2px'
+                            }
+                        },
+
+                        {
+                            selector: 'node.semitransp',
+                            style: { 'opacity': '0.1' }
+                        },
+
+                        {
+                            selector: 'edge.highlight',
+                            style: { 'mid-target-arrow-color': '#FFF' }
+                        },
+
+                        {
+                            selector: 'edge.semitransp',
+                            style: { 'opacity': '0.1' }
+                        }
+                    ],
+
+                    layout: {
+                        name: 'cose',
+                        randomize: true,
+                        quality: "default",
+                        idealEdgeLength: 1,
+                        //padding: 1,
+                        animate: true,
+                        nodeRepulsion: function (node) { return 2048; },
+                        fit: true,
+                        gravity: 0.5,
+                        animationDuration: 1000
+                    },
+
+                    elements: parsedData
+                });
+
+                function makePopper(ele) {
+                    let ref = ele.popperRef(); // used only for positioning
+
+                    ele.tippy = tippy(ref, { // tippy options:
+                        content: () => {
+                            let content = document.createElement('div');
+
+                            content.innerHTML = ele.id();
+
+                            return content;
+                        },
+                        trigger: 'manual' // probably want manual mode
+                    });
+                }
+
+                cy.ready(function () {
+                    cy.elements().forEach(function (ele) {
+                        makePopper(ele);
+                    });
+                });
+
+                cy.elements().unbind('mouseover');
+                cy.elements().bind('mouseover', (event) => event.target.tippy.show());
+
+                cy.elements().unbind('mouseout');
+                cy.elements().bind('mouseout', (event) => event.target.tippy.hide());
+
+                cy.on('mouseover', 'node', function (e) {
+                    var sel = e.target;
+                    cy.elements().difference(sel.incomers()).difference(sel.outgoers()).not(sel).addClass('semitransp');
+                    sel.addClass('highlight').outgoers().addClass('highlight');
+                    sel.addClass('highlight').incomers().addClass('highlight');
+                });
+
+                cy.on('mouseout', 'node', function (e) {
+                    var sel = e.target;
+                    cy.elements().removeClass('semitransp');
+                    sel.removeClass('highlight').outgoers().removeClass('highlight');
+                    sel.removeClass('highlight').incomers().removeClass('highlight');
+                });
+
+                cy.on('click', 'node', function (e) {
+                    var personId = e.target.id();
+                    if (personId && socialLookup[personId]) {
+                        window.open(socialLookup[personId], '_blank');
+                    }
+                });
+
+                cy.on('touchend', 'node', function (e) {
+                    var personId = e.target.id();
+                    if (personId && socialLookup[personId]) {
+                        window.open(socialLookup[personId], '_blank');
+                    }
+                });
+            },
+            (error) => {
+                document.getElementById("cy").innerHTML = `<p>error: ${error}</p>`;
+            }
+        );
+    </script>
+</body>
+</html>
